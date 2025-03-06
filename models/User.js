@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   otp: { type: String, default: '' },
   otpExpiration: { type: Date, default: null },
   unreadMessagesCount: { type: Number, default: 0 },
+  profileImage: { type: String, default: '' }  
 });
 
 module.exports = mongoose.model('User', UserSchema);
