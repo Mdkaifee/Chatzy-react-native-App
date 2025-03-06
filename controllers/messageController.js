@@ -74,13 +74,23 @@ exports.markAsRead = async (req, res) => {
   const { messageId } = req.body;
 
   try {
-    const message = await Message.findById(messageId);
-    if (!message) return res.status(404).json({ message: "Message not found" });
+    // Check if messageId is an array (multiple messages)
+    const messageIds = Array.isArray(messageId) ? messageId : [messageId];
 
-    message.isRead = true;
-    await message.save();
+    // Find all the messages by their IDs
+    const messages = await Message.find({ '_id': { $in: messageIds } });
 
-    res.status(200).json({ message: "Message marked as read successfully" });
+    if (messages.length === 0) {
+      return res.status(404).json({ message: "No messages found" });
+    }
+
+    // Mark all the messages as read
+    messages.forEach(message => {
+      message.isRead = true;
+      message.save();
+    });
+
+    res.status(200).json({ message: "Messages marked as read successfully" });
   } catch (err) {
     res.status(500).json({ errorMessage: "Server error" });
   }
